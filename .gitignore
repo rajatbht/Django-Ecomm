@@ -1,0 +1,6 @@
+/.vscode/
+db.sqlite3
+Pipfile.lock
+**/migrations/**
+!**/migrations
+!**/migrations/__init__.py
