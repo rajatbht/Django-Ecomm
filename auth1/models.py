@@ -28,8 +28,8 @@ class User(YourBaseClass):
     #     return self.email
 
 class Cart(models.Model):
-    user_id=models.ForeignKey(User, on_delete=PROTECT)
-    product_id=models.ManyToManyField(Product, blank=True)
+    user_id=models.IntegerField(default=0)
+    product_id=models.IntegerField(default=0)
     
     # def __str__(self):
     #     return str(self.id)

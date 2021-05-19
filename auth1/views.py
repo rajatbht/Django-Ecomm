@@ -10,6 +10,8 @@ from rest_framework import status
 from django.http.response import JsonResponse
 from django.contrib.auth.hashers import make_password, check_password
 from ecom.tokens import createToken
+from django.db import connection
+from product.serializers import ProductSerializer
 
 
 def createUser(request):
@@ -38,9 +40,11 @@ def loginUser(request):
     existingUsersList = User.objects.filter(email=request['email'])
     if existingUsersList.count() == 0:
         return JsonResponse({'message': 'No user exist'}, safe=False, status=status.HTTP_400_BAD_REQUEST)
-
     existingUser = UserSerializer(existingUsersList[0])
+    # print(existingUser)
+    # print(existingUser.data['password'])
     existingPassword = existingUser['password'].value
+    print(existingPassword)
     recieve_pswd = request['password']
     print("PasswordMatch? : " + str(check_password(recieve_pswd, existingPassword)))
     if check_password(recieve_pswd, existingPassword):
@@ -65,20 +69,21 @@ def addCart(request, user_id):
     try:
         request = JSONParser().parse(request)
         request["user_id"]=user_id
-        user = User.objects.get(id=user_id)
-        print(user)
-        cart = Cart.objects.get(user_id=user)
-        print(cart)
+        # user = User.objects.get(id=user_id)
+        # print(1)
+        # print(user)
+        # cart = Cart.objects.get(user_id=user)
+        # print(cart)
         # print(cart['id'])
         # print(cart.product_id)
 
         
-        productId = request['product_id']
-        product = Product.objects.get(id=productId)
-        print(product)
-        cart.product_id.add(product)
-        print(1)
-        cart = CartSerializer(data=cart)
+        # productId = request['product_id']
+        # product = Product.objects.get(id=productId)
+        # print(product)
+        # cart.product_id.add(product)
+        # print(1)
+        cart = CartSerializer(data=request)
         print(cart)
         if cart.is_valid():
             print("if")
@@ -95,6 +100,21 @@ def addCart(request, user_id):
     except Exception as ex:
         print(ex)
         return JsonResponse({"error": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+def getCart(request, user_id):
+    user = Cart.objects.filter(user_id=user_id)
+    response = CartSerializer(user, many=True)
+    fullCart=[]
+    print(len(response.data))
+    for no in range(0,len(response.data)):
+        productID=response.data[no]["product_id"]
+        print(productID)
+        product=Product.objects.filter(id=productID)
+        print(product)
+        productJson= ProductSerializer(product, many=True)
+        print(productJson.data)
+        fullCart.append(productJson.data)
+    return JsonResponse(data=fullCart, safe=False, status=status.HTTP_202_ACCEPTED)
     # products = Product.objects.filter(id=request['product_id'])
     # request['product_id'] = products
     # P_id = CartSerializer(data=request)

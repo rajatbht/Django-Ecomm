@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'name', 'email', 'password',
-                  'age', 'is_active', 'is_admin', 'gender', 'created_at', 'modified_at']
+                  'age', 'is_active', 'is_admin', 'gender']
 
 class CartSerializer(serializers.ModelSerializer):
 

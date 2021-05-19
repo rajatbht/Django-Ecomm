@@ -5,5 +5,7 @@ urlpatterns = [
     path('login', controller.login),
     path('profile', controller.profile),
     path('admin', controller.onlyForAdmins),
-    path('cart', controller.cartDetail)
+    path('cart', controller.Add_cart),
+    path('getcart', controller.Check_cart)
+
 ]

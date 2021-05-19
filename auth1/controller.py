@@ -27,5 +27,10 @@ def onlyForAdmins(request,userData):
 
 @api_view(['POST'])
 @checkToken("user")
-def cartDetail(request, CurrentUser):
+def Add_cart(request, CurrentUser):
     return views.addCart(request, CurrentUser['id'])
+
+@api_view(['GET'])
+@checkToken("user")
+def Check_cart(request, CurrentUser):
+    return views.getCart(request, CurrentUser['id'])
