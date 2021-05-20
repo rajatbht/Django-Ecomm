@@ -30,6 +30,9 @@ class User(YourBaseClass):
 class Cart(models.Model):
     user_id=models.IntegerField(default=0)
     product_id=models.IntegerField(default=0)
+    product_quantity=models.IntegerField(default=0)
+    class Meta:
+        unique_together = (('user_id', 'product_id'),)
     
     # def __str__(self):
     #     return str(self.id)

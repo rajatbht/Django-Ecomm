@@ -10,7 +10,6 @@ from rest_framework import status
 from django.http.response import JsonResponse
 from django.contrib.auth.hashers import make_password, check_password
 from ecom.tokens import createToken
-from django.db import connection
 from product.serializers import ProductSerializer
 
 
@@ -41,8 +40,6 @@ def loginUser(request):
     if existingUsersList.count() == 0:
         return JsonResponse({'message': 'No user exist'}, safe=False, status=status.HTTP_400_BAD_REQUEST)
     existingUser = UserSerializer(existingUsersList[0])
-    # print(existingUser)
-    # print(existingUser.data['password'])
     existingPassword = existingUser['password'].value
     print(existingPassword)
     recieve_pswd = request['password']
@@ -68,23 +65,17 @@ def getUser(request, email):
 def addCart(request, user_id):
     try:
         request = JSONParser().parse(request)
+        print(request)
         request["user_id"]=user_id
-        # user = User.objects.get(id=user_id)
-        # print(1)
-        # print(user)
-        # cart = Cart.objects.get(user_id=user)
-        # print(cart)
-        # print(cart['id'])
-        # print(cart.product_id)
-
-        
-        # productId = request['product_id']
-        # product = Product.objects.get(id=productId)
-        # print(product)
-        # cart.product_id.add(product)
-        # print(1)
+        cart_obj=Cart.objects.filter(user_id=user_id, product_id=request["product_id"])
+        if cart_obj.count()>0:
+            cart = Cart.objects.get(user_id=user_id, product_id=request["product_id"])
+            print(f"product quatity before: {cart.product_quantity}")
+            cart.product_quantity+=request["product_quantity"]
+            print(f"product quatity After: {cart.product_quantity}")
+            cart.save()
+            return JsonResponse(f"updated product_quantity to {cart.product_quantity}", safe=False, status=status.HTTP_202_ACCEPTED)
         cart = CartSerializer(data=request)
-        print(cart)
         if cart.is_valid():
             print("if")
             print(cart._validated_data)
@@ -113,29 +104,5 @@ def getCart(request, user_id):
         print(product)
         productJson= ProductSerializer(product, many=True)
         print(productJson.data)
-        fullCart.append(productJson.data)
+        fullCart.extend(productJson.data)
     return JsonResponse(data=fullCart, safe=False, status=status.HTTP_202_ACCEPTED)
-    # products = Product.objects.filter(id=request['product_id'])
-    # request['product_id'] = products
-    # P_id = CartSerializer(data=request)
-    # print(P_id)
-    # if P_id.is_valid():
-    #     print("in valid")
-    #     # P_id.save()
-    #     return JsonResponse("HIIIIIIIII", safe=False, status=status.HTTP_202_ACCEPTED)
-    # else:
-    #     return JsonResponse(P_id.errors, safe=False, status=status.HTTP_400_BAD_REQUEST)
-
-# def getAllUsers():
-#     all_users=User.objects.all()
-#     all_users_Json=UserSerializer(all_users)
-#     return JsonResponse(data=all_users_Json.data,status=status.HTTP_202_ACCEPTED)
-
-
-# def deleteAllUsers():
-#     all_deleted_users=User.objects.all().delete()
-#     return JsonResponse({'message':'{} Users deleted successfully!'.format(all_deleted_users)} ,status=status.HTTP_204_NO_CONTENT)
-
-# def deleteByID(id):
-#     current_deleted_user=User.objects.filter(id=id).delete()
-#     return JsonResponse({'message':'{} User deleted successfully!'.format(current_deleted_user)} ,status=status.HTTP_204_NO_CONTENT)
