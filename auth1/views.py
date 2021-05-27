@@ -99,10 +99,48 @@ def getCart(request, user_id):
     print(len(response.data))
     for no in range(0,len(response.data)):
         productID=response.data[no]["product_id"]
-        print(productID)
+        productQuantity=response.data[no]["product_quantity"]
         product=Product.objects.filter(id=productID)
-        print(product)
         productJson= ProductSerializer(product, many=True)
-        print(productJson.data)
-        fullCart.extend(productJson.data)
+        print(1)
+        # print(productJson.data[0]['name'])
+        # mmm = {}
+        # mmm['name'] = productJson.data[0]['name']
+        # print(mmm)
+        mmm = {
+                "name":productJson.data[0]['name'],
+                "description":productJson.data[0]['description'],
+                "price":productJson.data[0]['price'],
+                "productQuantity":productQuantity,
+        }
+        print(2)
+        fullCart.append(mmm)
+    print(fullCart)
     return JsonResponse(data=fullCart, safe=False, status=status.HTTP_202_ACCEPTED)
+
+def changePswd(request, email):
+    try:
+        request = JSONParser().parse(request)
+    except:
+        return JsonResponse({"error": "Invalid format for the request"}, status=status.HTTP_400_BAD_REQUEST)
+    if request['new password']==request['confirm password']:
+        print(1111111)
+        existingUserObj = User.objects.filter(email=email)
+        print(existingUserObj[0].password)
+        dbPassword = existingUserObj[0].password
+        print(dbPassword)
+        current_pswd = request['current password']
+        print("PasswordMatch? : " + str(check_password(current_pswd, dbPassword)))
+        if check_password(current_pswd, dbPassword):
+            hashedPassword = make_password(request['new password'])
+            print(hashedPassword)
+            getExistingUserObj = User.objects.get(email=email)
+            getExistingUserObj.password=hashedPassword
+            getExistingUserObj.save()
+            print(getExistingUserObj.password)
+            return JsonResponse("Password Changed Successfully!!", safe=False, status=status.HTTP_202_ACCEPTED)
+        else:
+            return JsonResponse({"error": "Current password incorrect"}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return JsonResponse({"error": "New Password does not match with the Confirm Password"}, status=status.HTTP_400_BAD_REQUEST)
+    

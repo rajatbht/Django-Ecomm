@@ -34,3 +34,8 @@ def Add_cart(request, CurrentUser):
 @checkToken("user")
 def Check_cart(request, CurrentUser):
     return views.getCart(request, CurrentUser['id'])
+
+@api_view(['POST'])
+@checkToken("user")
+def change_pswd(request, CurrentUser):
+    return views.changePswd(request, CurrentUser['email'])

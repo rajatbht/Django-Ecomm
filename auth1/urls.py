@@ -6,6 +6,7 @@ urlpatterns = [
     path('profile', controller.profile),
     path('admin', controller.onlyForAdmins),
     path('cart', controller.Add_cart),
-    path('getcart', controller.Check_cart)
+    path('getcart', controller.Check_cart),
+    path('changepassword', controller.change_pswd)
 
 ]
