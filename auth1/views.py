@@ -49,10 +49,13 @@ def loginUser(request):
             'email': request['email'],
             'id' : existingUser['id'].value
         }
-        token = createToken(payload)
-        response = {'message': 'login success',
-                    'token': token}
-        return JsonResponse(response, safe=False, status=status.HTTP_202_ACCEPTED)
+        if existingUser['is_active'].value:
+            token = createToken(payload)
+            response = {'message': 'login success',
+                        'token': token}
+            return JsonResponse(response, safe=False, status=status.HTTP_202_ACCEPTED)
+        else:
+            return JsonResponse({'message': 'user is not activated pls check the email we sent and activate yourself !!'}, safe=False, status=status.HTTP_400_BAD_REQUEST)
     else:
         return JsonResponse({'message': 'password doesnt match'}, safe=False, status=status.HTTP_400_BAD_REQUEST)
 

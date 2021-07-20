@@ -11,7 +11,7 @@ class User(YourBaseClass):
     name = models.CharField(max_length=254, blank=False)
     email = models.EmailField(max_length=254, unique=True)
     password = models.CharField(max_length=254, blank=False)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     age = models.IntegerField(
         blank=False,

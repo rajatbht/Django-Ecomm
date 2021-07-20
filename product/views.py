@@ -1,5 +1,5 @@
 from rest_framework import generics, viewsets
-from django_request_mapping import request_mapping
+# from django_request_mapping import request_mapping
 from django.http.response import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import ParseError, ValidationError
